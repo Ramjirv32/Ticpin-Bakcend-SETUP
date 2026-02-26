@@ -39,6 +39,8 @@ func LoginOrCreateOrganizer(email, password string) (*models.Organizer, bool, er
 			return nil, false, err
 		}
 
+		_ = CreateOrganizerVerification(org.ID)
+
 		return &org, true, nil
 	}
 
@@ -49,7 +51,7 @@ func LoginOrCreateOrganizer(email, password string) (*models.Organizer, bool, er
 	return &org, false, nil
 }
 
-func SendPlayOrganizerOTP(email string) error {
+func SendOrganizerOTP(email, category string) error {
 	collection := config.GetDB().Collection("organizers")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -64,7 +66,14 @@ func SendPlayOrganizerOTP(email string) error {
 		return err
 	}
 
-	return config.SendPlayOTP(email, otp)
+	switch category {
+	case "events":
+		return config.SendEventsOTP(email, otp)
+	case "dining":
+		return config.SendDiningOTP(email, otp)
+	default:
+		return config.SendPlayOTP(email, otp)
+	}
 }
 
 func VerifyOrganizerOTP(email, otp string) (*models.Organizer, error) {

@@ -1,37 +1,51 @@
 package config
 
 import (
-"fmt"
-"math/rand"
-"os"
-"strconv"
+	"fmt"
+	"math/rand"
+	"os"
+	"strconv"
 
-gomail "gopkg.in/gomail.v2"
+	gomail "gopkg.in/gomail.v2"
 )
 
 func sendOTP(from, pass, to, subject, body string) error {
-port, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
-if port == 0 {
-port = 587
-}
+	port, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	if port == 0 {
+		port = 587
+	}
 
-m := gomail.NewMessage()
-m.SetHeader("From", from)
-m.SetHeader("To", to)
-m.SetHeader("Subject", subject)
-m.SetBody("text/html", body)
+	m := gomail.NewMessage()
+	m.SetHeader("From", from)
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", body)
 
-d := gomail.NewDialer("smtp.gmail.com", port, from, pass)
-return d.DialAndSend(m)
+	d := gomail.NewDialer("smtp.gmail.com", port, from, pass)
+	return d.DialAndSend(m)
 }
 
 func SendPlayOTP(toEmail, otp string) error {
-from := os.Getenv("PLAY_EMAIL")
-pass := os.Getenv("PLAY_APP_PASSWORD")
-body := fmt.Sprintf("<h2>Your Ticpin Play OTP: <b>%s</b></h2><p>Valid for 10 minutes.</p>", otp)
-return sendOTP(from, pass, toEmail, "Ticpin Play OTP Verification", body)
+	from := os.Getenv("PLAY_EMAIL")
+	pass := os.Getenv("PLAY_APP_PASSWORD")
+	body := fmt.Sprintf("<h2>Your Ticpin Play OTP: <b>%s</b></h2><p>Valid for 10 minutes.</p>", otp)
+	return sendOTP(from, pass, toEmail, "Ticpin Play OTP Verification", body)
+}
+
+func SendEventsOTP(toEmail, otp string) error {
+	from := os.Getenv("EVENTS_EMAIL")
+	pass := os.Getenv("EVENTS_APP_PASSWORD")
+	body := fmt.Sprintf("<h2>Your Ticpin Events OTP: <b>%s</b></h2><p>Valid for 10 minutes.</p>", otp)
+	return sendOTP(from, pass, toEmail, "Ticpin Events OTP Verification", body)
+}
+
+func SendDiningOTP(toEmail, otp string) error {
+	from := os.Getenv("DINING_EMAIL")
+	pass := os.Getenv("DINING_APP_PASSWORD")
+	body := fmt.Sprintf("<h2>Your Ticpin Dining OTP: <b>%s</b></h2><p>Valid for 10 minutes.</p>", otp)
+	return sendOTP(from, pass, toEmail, "Ticpin Dining OTP Verification", body)
 }
 
 func GenerateOTP() string {
-return fmt.Sprintf("%06d", rand.Intn(1000000))
+	return fmt.Sprintf("%06d", rand.Intn(1000000))
 }

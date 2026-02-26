@@ -10,5 +10,6 @@ func PlayRoutes(app *fiber.App) {
 	play := app.Group("/api/organizer/play")
 	play.Post("/login", ctrl.PlayLogin)
 	play.Post("/verify", ctrl.VerifyOTP)
+	play.Post("/submit-verification", ctrl.SubmitVerification)
 	play.Get("/:id", ctrl.GetOrganizer)
 }

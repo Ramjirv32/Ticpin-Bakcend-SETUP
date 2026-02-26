@@ -77,4 +77,32 @@ func CreateIndexes() {
 		Options: options.Index().SetUnique(true),
 	}
 	orgProfileCollection.Indexes().CreateOne(ctx, orgProfileIndex)
+
+	orgVerificationCollection := db.Collection("organizer_verifications")
+	orgVerificationIndex := mongo.IndexModel{
+		Keys:    bson.D{{Key: "organizer_id", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
+	orgVerificationCollection.Indexes().CreateOne(ctx, orgVerificationIndex)
+
+	for _, colName := range []string{"play_verifications", "event_verifications", "dining_verifications"} {
+		col := db.Collection(colName)
+		col.Indexes().CreateOne(ctx, mongo.IndexModel{
+			Keys: bson.D{{Key: "organizer_id", Value: 1}},
+		})
+	}
+
+	for _, colName := range []string{"events", "plays", "dinings"} {
+		col := db.Collection(colName)
+		col.Indexes().CreateMany(ctx, []mongo.IndexModel{
+			{Keys: bson.D{{Key: "organizer_id", Value: 1}}},
+			{Keys: bson.D{{Key: "createdAt", Value: -1}}},
+		})
+	}
+
+	passCollection := db.Collection("ticpin_passes")
+	passCollection.Indexes().CreateMany(ctx, []mongo.IndexModel{
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+		{Keys: bson.D{{Key: "status", Value: 1}}},
+	})
 }

@@ -1,4 +1,4 @@
-package play
+package dining
 
 import (
 	"ticpin-backend/models"
@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func PlayLogin(c *fiber.Ctx) error {
+func DiningLogin(c *fiber.Ctx) error {
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -24,7 +24,7 @@ func PlayLogin(c *fiber.Ctx) error {
 		return c.Status(401).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	if err := services.SendOrganizerOTP(req.Email, "play"); err != nil {
+	if err := services.SendOrganizerOTP(req.Email, "dining"); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "failed to send otp"})
 	}
 
@@ -53,17 +53,8 @@ func VerifyOTP(c *fiber.Ctx) error {
 	return c.JSON(org)
 }
 
-func GetOrganizer(c *fiber.Ctx) error {
-	org, err := services.GetOrganizerByID(c.Params("id"))
-	if err != nil {
-		return c.Status(404).JSON(fiber.Map{"error": "organizer not found"})
-	}
-
-	return c.JSON(org)
-}
-
 func SubmitVerification(c *fiber.Ctx) error {
-	var v models.PlayVerification
+	var v models.DiningVerification
 	if err := c.BodyParser(&v); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -72,7 +63,7 @@ func SubmitVerification(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "organizer_id required"})
 	}
 
-	if err := services.SubmitPlayVerification(&v); err != nil {
+	if err := services.SubmitDiningVerification(&v); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 

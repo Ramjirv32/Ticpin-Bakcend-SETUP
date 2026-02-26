@@ -41,3 +41,12 @@ func UpdateProfile(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "profile updated"})
 }
+
+func GetVerificationStatus(c *fiber.Ctx) error {
+	v, err := services.GetOrganizerVerification(c.Params("id"))
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"error": "verification record not found"})
+	}
+
+	return c.JSON(v)
+}
